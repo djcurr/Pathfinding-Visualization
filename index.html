@@ -47,12 +47,17 @@ license that can be found in the LICENSE file.
         }
       );
 
-     
-      const body = document.querySelector('body');
+      function dragoverHandler(ev) {
+        ev.preventDefault()
 
-      body.onpointerdown = (event) => {
-        toggleWalls()
-      };
+      }
+
+      function drop_handler(ev) {
+        //console.log(ev)
+        moveNode(ev.target.id)
+      }
+      
+      
       
     </script>
 
