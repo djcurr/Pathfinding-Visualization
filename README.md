@@ -1,6 +1,7 @@
 # Pathfinding Visualization
 
-Pathfinding Visualization is a fast and efficient web application that allows users to visualize pathfinding algorithms. With this application, users can place walls, move the start and end nodes, and see the algorithm process in action. What makes Pathfinding Visualization unique is that it is built in Go using WebAssembly, which makes it faster and more efficient than other similar applications.
+A fast WebAssembly application that allows users to visualize pathfinding algorithms. Users can place walls, move the start and end nodes, and see the algorithm process in action. 
+This was built in Go using WebAssembly, Go, and JavaScript.
 
 ## Table of Contents
 
@@ -16,15 +17,14 @@ Pathfinding Visualization offers the following features:
 - Visualize pathfinding algorithms such as Dijkstra's algorithm
 - Place walls and move the start and end nodes
 - See the algorithm process in action
-- Fast and efficient performance thanks to WebAssembly
 
 ## Technologies Used
 
 Pathfinding Visualization is built using the following technologies:
 
-- Go: A programming language designed for building fast, efficient, and scalable software
+- Go
 - WebAssembly: A binary instruction format for a stack-based virtual machine that enables running code written in multiple languages on the web
-- HTML/CSS/JavaScript: The standard web development technologies for building user interfaces
+- HTML/CSS/JavaScript
 
 ## Getting Started
 
