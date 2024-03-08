@@ -1,0 +1,77 @@
+/* src/app/grid/controls.component.css */
+.controls-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+}
+
+.controls-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.control-item, .slider-item {
+  flex-grow: 1;
+  min-width: 150px;
+}
+
+.sliders {
+  .form-range {
+    width: 100%;
+  }
+}
+
+.action-buttons {
+  button {
+    flex-grow: 1;
+    min-width: 100px;
+  }
+}
+
+.select-algorithm {
+  .dropdown-toggle {
+    background-color: #adb0b3;
+  &:hover, &:focus {
+    background-color: #717375;
+  }
+  }
+}
+
+.btn {
+  border: none;
+  transition: background-color 0.3s, box-shadow 0.3s;
+  &:hover {
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.eraser {
+  background-color: #adb0b3;
+  &.active {
+    background-color: #606263;
+    &:hover {
+      background-color: #454647;
+    }
+  }
+}
+
+.dropdown-toggle {
+  width: 40%;
+  &::after {
+    margin-left: 0.5em;
+  }
+}
+
+@media (max-width: 768px) {
+  .controls-row {
+    flex-direction: column;
+  }
+
+  .control-item, .slider-item, .action-buttons button {
+    width: 100%;
+    min-width: unset;
+  }
+}

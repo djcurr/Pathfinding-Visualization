@@ -1,0 +1,36 @@
+<!-- src/app/grid/controls.component.html -->
+<div class="container controls-container">
+
+  <div class="controls-row">
+    <div ngbDropdown class="dropdown control-item select-algorithm d-flex justify-content-center">
+      <button ngbDropdownToggle class="btn dropdown-toggle" type="button" id="algorithmDropdown" aria-expanded="false">
+        {{ activeAlgorithm }}
+      </button>
+      <ul ngbDropdownMenu aria-labelledby="algorithmDropdown">
+        <li><a ngbDropdownItem class="dropdown-item" href="#" (click)="setAlgorithm(AStar)">{{Algorithms.get(AStar)}}</a></li>
+        <li><a ngbDropdownItem class="dropdown-item" href="#" (click)="setAlgorithm(Dijkstra)">{{Algorithms.get(Dijkstra)}}</a></li>
+      </ul>
+    </div>
+
+    <button class="btn control-item eraser" [class.active]="isEraserActive" (click)="toggleEraser()">Toggle Eraser</button>
+  </div>
+
+  <div class="controls-row sliders">
+    <div class="mb-3 slider-item">
+      <label for="gridSizeSlider" class="form-label">Grid Size</label>
+      <input type="range" class="form-range" id="gridSizeSlider" min="20" max="50" step="1" #gridSizeSlider [defaultValue]="DefaultGridSize" (input)="changeGridSize($event)">
+    </div>
+
+    <div class="mb-3 slider-item">
+      <label for="animationSpeedSlider" class="form-label">Animation Speed</label>
+      <input type="range" class="form-range" id="animationSpeedSlider" min="3" max="12" #animationSpeedSlider step="1" [defaultValue]="DefaultAnimationSpeed" (input)="changeAnimationSpeed($event)">
+    </div>
+  </div>
+
+  <div class="controls-row action-buttons">
+    <button type="button" class="btn btn-primary" (click)="startPathfinding()">Start Pathfinding</button>
+    <button type="button" class="btn btn-warning" (click)="clearGrid()">Clear Grid</button>
+    <button type="button" class="btn btn-danger" (click)="resetApplication()">Reset</button>
+  </div>
+
+</div>

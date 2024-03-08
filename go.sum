@@ -1,6 +1,2 @@
-github.com/shurcooL/go v0.0.0-20200502201357-93f07166e636 h1:aSISeOcal5irEhJd1M+IrApc0PdcN7e7Aj4yuEnOrfQ=
-github.com/shurcooL/go v0.0.0-20200502201357-93f07166e636/go.mod h1:TDJrrUr11Vxrven61rcy3hJMUqaf/CLWYhHNPmT14Lk=
-github.com/shurcooL/go-goon v0.0.0-20210110234559-7585751d9a17 h1:lRAUE0dIvigSSFAmaM2dfg7OH8T+a8zJ5smEh09a/GI=
-github.com/shurcooL/go-goon v0.0.0-20210110234559-7585751d9a17/go.mod h1:N5mDOmsrJOB+vfqUK+7DmDyjhSLIIBnXo9lvZJj3MWQ=
 honnef.co/go/js/dom/v2 v2.0.0-20210725211120-f030747120f2 h1:D/LwaFp9xgVb5wK9aMXA8SjpKikXtb7MqkjtZwRMMmw=
 honnef.co/go/js/dom/v2 v2.0.0-20210725211120-f030747120f2/go.mod h1:H5R0jAIe6IchQE778FS2QcrNVgS4vPFb0HPb72n/IJI=

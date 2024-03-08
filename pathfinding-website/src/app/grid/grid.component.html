@@ -1,0 +1,13 @@
+<!-- src/app/grid/grid.component.html -->
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12 grid" (mouseup)="onMouseUp()">
+      <div *ngFor="let row of grid" class="row" >
+        <div *ngFor="let cell of row" class="cell" [class.wall]="cell.isWall" [class.start]="cell.isStart"
+             [class.end]="cell.isEnd" [class.path]="cell.isPath" [class.visited]="cell.visited"
+             (mousedown)="onMouseDown(cell)" (mouseenter)="onMouseEnter(cell)">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
