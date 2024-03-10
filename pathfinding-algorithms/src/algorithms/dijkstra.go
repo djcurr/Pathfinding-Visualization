@@ -70,17 +70,13 @@ func (d *Dijkstra) FindPath() error {
 	if err != nil {
 		return err
 	}
-	endNode, err := d.grid.GetEnd()
-	if err != nil {
-		return err
-	}
 	d.distances[startNode] = 0
 	heap.Push(d.openSet, datastructures.NewItem(startNode, 0))
 
 	for d.openSet.Len() > 0 {
 		current := heap.Pop(d.openSet).(*datastructures.Item).GetNode()
 
-		if current == endNode {
+		if current.IsEnd {
 			d.solved = true
 			return nil
 		}
@@ -124,13 +120,13 @@ func (d *Dijkstra) FindPath() error {
 	return errors.New("path to destination not found")
 }
 
-func (d *Dijkstra) GetNodes() ([][]*models.Node, error) {
+func (d *Dijkstra) GetGrid() (*models.Grid, error) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	if d.grid == nil {
 		return nil, errors.New("grid is nil")
 	}
-	return d.grid.GetNodes()
+	return d.grid, nil
 }
 
 func (d *Dijkstra) GetSnapshot() ([][]*models.Node, error) {

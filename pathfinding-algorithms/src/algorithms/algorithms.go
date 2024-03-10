@@ -6,7 +6,7 @@ type PathfindingAlgorithm interface {
 	Init(width, height int) error
 	Clear() error
 	FindPath() error
-	GetNodes() ([][]*models.Node, error)
+	GetGrid() (*models.Grid, error)
 	GetSnapshot() ([][]*models.Node, error)
 	GetPath() (map[models.Node]models.Node, error)
 	SetStart(x, y int) error

@@ -1,5 +1,5 @@
 // src/app/grid/controls.component.ts
-import {Component, ElementRef, EventEmitter, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
 import {WasmService} from "../wasm.service";
 import {Algorithms, AStar, DefaultAlgorithm, DefaultAnimationSpeed, DefaultGridSize, Dijkstra} from "../app.component";
 
@@ -14,6 +14,7 @@ export class ControlsComponent implements OnInit {
   @Output() animationSpeed = new EventEmitter<number>();
   @Output() gridSize = new EventEmitter<number>();
   @Output() clearGridEvent = new EventEmitter<void>();
+  @Output() drawGrid = new EventEmitter<void>();
   @ViewChild('gridSizeSlider') gridSizeSlider: ElementRef | undefined;
   @ViewChild('animationSpeedSlider') animationSpeedSlider: ElementRef | undefined;
   currentSize: number = DefaultGridSize;
@@ -77,8 +78,10 @@ export class ControlsComponent implements OnInit {
     this.eraserToggled.emit(this.isEraserActive);
   }
 
-  get algorithmsArray() {
-    return Array.from(this.Algorithms.entries());
+  generateMaze() {
+    this.wasmService.generateMaze().then(() => {
+      this.drawGrid.emit()
+    })
   }
 
   protected readonly DefaultGridSize = DefaultGridSize;

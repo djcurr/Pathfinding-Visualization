@@ -47,15 +47,11 @@ func (pq *PriorityQueue) Pop() interface{} {
 func (pq *PriorityQueue) Update(node *models.Node, newPriority float64) {
 	for i, item := range *pq {
 		if item.node == node {
-			// Node found, update its priority
 			(*pq)[i].priority = newPriority
-			// Fix the heap since the priority is updated
 			heap.Fix(pq, i)
 			return
 		}
 	}
-	// If the node is not found, it might be necessary to add it to the queue
-	// depending on your specific requirements. This part is left as an exercise.
 }
 
 func (pq PriorityQueue) Contains(node *models.Node) bool {

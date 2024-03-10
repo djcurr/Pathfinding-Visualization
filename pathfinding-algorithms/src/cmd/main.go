@@ -6,12 +6,11 @@ import (
 	"fmt"
 	"pathfinding-algorithms/models"
 	"pathfinding-algorithms/pathfinder"
-	"reflect"
 	"syscall/js"
-	"unsafe"
 )
 
 var pf *pathfinder.Pathfinder
+var snapshotPointer *[]uint8
 
 func main() {
 	c := make(chan struct{}, 0)
@@ -100,42 +99,23 @@ func changeGridSize(width, height int) bool {
 }
 
 //export getGrid
-func getGrid(out *uint8, len int) bool {
-	grid, err := pf.GetGrid()
+func getGrid() *[]uint8 {
+	grid, err := pf.GetNodes()
 	if err != nil {
 		log(fmt.Sprintf("Error getting grid: %v", err))
-		return false
+		return nil
 	}
-
-	if width, height, err := pf.GetDimensions(); err != nil {
-		log(fmt.Sprintf("Error getting dimensions: %v", err))
-		return false
-	} else if width*height != len {
-		log(fmt.Sprintf("Grid array is not large enough: %v", len))
-		return false
-	}
+	out := make([]uint8, len(grid)*len(grid[0]))
 
 	encodeGrid(grid, out)
-	return true
+	return &out
 }
 
-func encodeGrid(grid [][]*models.Node, encodedGrid *uint8) {
-	width, height, err := pf.GetDimensions()
-	if err != nil {
-		log(fmt.Sprintf("Error getting dimensions: %v", err))
-	}
-	// Create a slice header
-	sliceHeader := (*reflect.SliceHeader)(unsafe.Pointer(&encodedGrid))
-	nodes := width * height
-	sliceHeader.Len = uintptr(unsafe.Pointer(&nodes))
-	sliceHeader.Cap = uintptr(unsafe.Pointer(&nodes))
-
-	// Now, firstElemPtr is a slice that you can index into
-	dataSlice := *(*[]uint8)(unsafe.Pointer(sliceHeader))
-	for row := 0; row < height; row++ {
-		for col := 0; col < width; col++ {
+func encodeGrid(grid [][]*models.Node, encodedGrid []uint8) {
+	for row := 0; row < len(grid); row++ {
+		for col := 0; col < len(grid[0]); col++ {
 			encodedNode := convertNodeToUint(*grid[row][col])
-			dataSlice[row*width+col] = encodedNode
+			encodedGrid[row*len(grid[0])+col] = encodedNode
 		}
 	}
 }
@@ -176,7 +156,7 @@ func findPath() bool {
 
 //export getNumNodes
 func getNumNodes() int {
-	grid, err := pf.GetGrid()
+	grid, err := pf.GetNodes()
 	if err != nil {
 		log(fmt.Sprintf("Error getting grid: %v", err))
 		return -1
@@ -196,7 +176,7 @@ func getNumPathNodes() int {
 
 //export getWidth
 func getWidth() int {
-	grid, err := pf.GetGrid()
+	grid, err := pf.GetNodes()
 	if err != nil {
 		log(fmt.Sprintf("Error getting grid: %v", err))
 		return -1
@@ -205,71 +185,54 @@ func getWidth() int {
 }
 
 //export getSnapshot
-func getSnapshot(out *uint8, length int) bool {
+func getSnapshot() *[]uint8 {
 	snapshot, err := pf.GetSnapshot()
-	if err != nil {
-		log(fmt.Sprintf("Error getting snapshot: %v", err))
-		return false
+	if err != nil || snapshot == nil {
+		return nil
 	}
-
-	if snapshot == nil {
-		return false
+	if snapshotPointer == nil || len(*snapshotPointer) != len(snapshot)*len(snapshot[0]) {
+		ptr := make([]uint8, len(snapshot)*len(snapshot[0]))
+		snapshotPointer = &ptr
 	}
-
-	if width, height, err := pf.GetDimensions(); err != nil {
-		log(fmt.Sprintf("Error getting dimensions: %v", err))
-		return false
-	} else if width*height != length {
-		log(fmt.Sprintf("Grid array is not large enough: %v", length))
-		return false
-	}
-
-	encodeGrid(snapshot, out)
-	return true
+	encodeGrid(snapshot, *snapshotPointer)
+	return snapshotPointer
 }
 
 //export getPath
-func getPath(out *uint32, length int) bool {
+func getPath() *[]uint32 {
 	path, err := pf.GetPath()
 	if err != nil {
-		log(fmt.Sprintf("Error getting snapshot: %v", err))
-		return false
+		log(fmt.Sprintf("Error getting path: %v", err))
+		return nil
 	}
-
-	if len(path)*4 > length {
-		log("Path array is not large enough")
-		return false
-	}
+	out := make([]uint32, len(path)*4)
 	encodePath(path, out)
-	return true
+	return &out
 }
 
-func encodePath(path map[models.Node]models.Node, out *uint32) {
-	nodes, err := pf.GetPath()
-	if err != nil {
-		log(fmt.Sprintf("Error getting path: %v", err))
-	}
-	// Create a slice header to manipulate the output array
-	length := len(nodes)
-	sliceHeader := (*reflect.SliceHeader)(unsafe.Pointer(&out))
-	sliceHeader.Len = uintptr(unsafe.Pointer(&length))
-	sliceHeader.Cap = uintptr(unsafe.Pointer(&length))
-
-	// Convert the *uint8 to a []uint8 slice for easier manipulation
-	dataSlice := *(*[]uint32)(unsafe.Pointer(sliceHeader))
+func encodePath(path map[models.Node]models.Node, out []uint32) {
 	i := 0
 	for prevNode, curNode := range path {
 		// Example encoding: node.X, node.Y -> nextNode.X, nextNode.Y
 		// Adjust based on your actual node structure and encoding needs
-		if i+1 < len(path) {
+		if i < len(path) {
 			index := i * 4
-			dataSlice[index] = uint32(prevNode.X)
-			dataSlice[index+1] = uint32(prevNode.Y)
-			dataSlice[index+2] = uint32(curNode.X)
-			dataSlice[index+3] = uint32(curNode.Y)
+			out[index] = uint32(prevNode.X)
+			out[index+1] = uint32(prevNode.Y)
+			out[index+2] = uint32(curNode.X)
+			out[index+3] = uint32(curNode.Y)
 			i++
 		}
 	}
+}
+
+//export generateMaze
+func generateMaze() bool {
+	if err := pf.GenerateMaze(); err != nil {
+		log(fmt.Sprintf("Error generating Maze: %v", err))
+		return false
+	}
+	return true
 }
 
 func log(a string) {

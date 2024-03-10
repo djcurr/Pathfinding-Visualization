@@ -3,6 +3,7 @@
               (startPathfindingEvent)="handleStartPathfindingEvent()"
               (gridSize)="handleChangeGridSize($event)"
               (clearGridEvent)="handleClearGrid()"
+              (drawGrid)="handleDrawGrid()"
 ></app-controls>
 <app-grid id="grid" [isEraserActive]="isEraserActive" [gridSize]="gridSize" [animationSpeed]="animationSpeed"
-          [clearGridEvent]="clearGrid" [startPathfinding]="startPathfinding"></app-grid>
+          [clearGridEvent]="clearGrid" [startPathfinding]="startPathfinding" [drawGridEvent]="drawGrid"></app-grid>

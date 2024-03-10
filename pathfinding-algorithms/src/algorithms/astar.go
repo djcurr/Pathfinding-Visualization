@@ -92,8 +92,10 @@ func (a *AStar) FindPath() error {
 
 	for a.openSet.Len() > 0 {
 		current := heap.Pop(a.openSet).(*datastructures.Item).GetNode()
-
-		if current == endNode {
+		if current == nil {
+			return errors.New("current is nil")
+		}
+		if current.IsEnd {
 			a.solved = true
 			return nil
 		}
@@ -113,8 +115,11 @@ func (a *AStar) FindPath() error {
 			}
 
 			tentativeGScore := a.gScore[current] + distBetween(current, neighbor)
+			//if tentativeGScore >= a.gScore[neighbor] && a.openSet.Contains(neighbor) {
+			//	continue
+			//}
 			if tentativeGScore >= a.gScore[neighbor] && a.gScore[neighbor] != 0 {
-				continue // This is not a better path.
+				continue
 			}
 
 			// This path is the best until now. Record it!
@@ -124,7 +129,7 @@ func (a *AStar) FindPath() error {
 			if !a.openSet.Contains(neighbor) {
 				heap.Push(a.openSet, datastructures.NewItem(neighbor, a.fScore[neighbor]))
 			} else {
-				a.openSet.Update(neighbor, a.fScore[neighbor]) // Assuming Update method exists
+				a.openSet.Update(neighbor, a.fScore[neighbor])
 			}
 		}
 		snapshot, err := a.grid.DeepCopy()
@@ -142,13 +147,13 @@ func (a *AStar) FindPath() error {
 
 }
 
-func (a *AStar) GetNodes() ([][]*models.Node, error) {
+func (a *AStar) GetGrid() (*models.Grid, error) {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 	if a.grid == nil {
 		return nil, errors.New("grid is nil")
 	}
-	return a.grid.GetNodes()
+	return a.grid, nil
 }
 
 func (a *AStar) GetSnapshot() ([][]*models.Node, error) {

@@ -15,12 +15,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px; /* Space between rows */
+  gap: 1px; /* Space between rows */
 }
 
 .row {
   display: flex;
-  gap: 2px; /* Space between cells */
+  gap: 1px; /* Space between cells */
 }
 
 .cell {

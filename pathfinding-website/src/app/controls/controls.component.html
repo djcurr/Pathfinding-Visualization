@@ -18,17 +18,18 @@
   <div class="controls-row sliders">
     <div class="mb-3 slider-item">
       <label for="gridSizeSlider" class="form-label">Grid Size</label>
-      <input type="range" class="form-range" id="gridSizeSlider" min="20" max="50" step="1" #gridSizeSlider [defaultValue]="DefaultGridSize" (input)="changeGridSize($event)">
+      <input type="range" class="form-range" id="gridSizeSlider" min="21" max="51" step="2" #gridSizeSlider [defaultValue]="DefaultGridSize" (input)="changeGridSize($event)">
     </div>
 
     <div class="mb-3 slider-item">
       <label for="animationSpeedSlider" class="form-label">Animation Speed</label>
-      <input type="range" class="form-range" id="animationSpeedSlider" min="3" max="12" #animationSpeedSlider step="1" [defaultValue]="DefaultAnimationSpeed" (input)="changeAnimationSpeed($event)">
+      <input type="range" class="form-range" id="animationSpeedSlider" min="1" max="50" #animationSpeedSlider step="1" [defaultValue]="DefaultAnimationSpeed" (input)="changeAnimationSpeed($event)">
     </div>
   </div>
 
   <div class="controls-row action-buttons">
     <button type="button" class="btn btn-primary" (click)="startPathfinding()">Start Pathfinding</button>
+    <button type="button" class="btn btn-warning" (click)="generateMaze()">Create Maze</button>
     <button type="button" class="btn btn-warning" (click)="clearGrid()">Clear Grid</button>
     <button type="button" class="btn btn-danger" (click)="resetApplication()">Reset</button>
   </div>

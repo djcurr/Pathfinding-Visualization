@@ -1,13 +1,11 @@
 // src/app/grid/grid.component.ts
 import {
-  ChangeDetectorRef,
   Component,
-  EventEmitter,
   OnChanges,
   Input,
   OnInit,
   OnDestroy,
-  Output, SimpleChanges,
+  SimpleChanges,
 } from '@angular/core';
 import { Cell } from '../cell/cell.model';
 import {WasmService, Point} from "../wasm.service";
@@ -30,6 +28,7 @@ export class GridComponent implements OnInit, OnDestroy, OnChanges {
   @Input() gridSize: number = DefaultGridSize;
   @Input() clearGridEvent!: any;
   @Input() startPathfinding!: boolean;
+  @Input() drawGridEvent!: boolean;
 
 
   constructor(private wasmService: WasmService) { }
@@ -47,6 +46,10 @@ export class GridComponent implements OnInit, OnDestroy, OnChanges {
       this.clearGrid();
     } else if (changes["startPathfinding"]) {
       this.solveGrid();
+    } else if (changes["drawGridEvent"]) {
+      if (!this.solved) {
+        requestAnimationFrame(this.drawGrid.bind(this));
+      }
     }
   }
 
@@ -108,7 +111,7 @@ export class GridComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   solveGrid(): void {
-    this.wasmService.findPath().then((result) => {
+    this.wasmService.findPath().then(() => {
       this.solved = true;
       requestAnimationFrame(this.showSnapshots.bind(this));
     }).catch((error) => {
@@ -142,13 +145,13 @@ export class GridComponent implements OnInit, OnDestroy, OnChanges {
 
   showSnapshots(): void {
     this.wasmService.getSnapshot().then((result) => {
-      for (let i = 0; i < this.animationSpeed / 3; i++) {
-        this.wasmService.getSnapshot()
+      if (result.length === 0) {
+        requestAnimationFrame(this.showPath.bind(this))
+        return
       }
       this.grid = result;
-      requestAnimationFrame(this.showSnapshots.bind(this))
-    }, () => {
-      requestAnimationFrame(this.showPath.bind(this))
+      const delay = 300 / this.animationSpeed
+      setTimeout(() => requestAnimationFrame(this.showSnapshots.bind(this)), delay)
     })
   }
 

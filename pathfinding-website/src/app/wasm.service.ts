@@ -1,6 +1,8 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Cell} from "./cell/cell.model";
+
 declare var Go: any;
+
 @Injectable({
   providedIn: 'root',
 })
@@ -23,7 +25,7 @@ export class WasmService {
   }
 
   wasmBrowserInstantiate = async (wasmModuleUrl: string, importObject: any) => {
-    let response = undefined;
+    let response;
 
     // Check if the browser supports streaming instantiation
     if (WebAssembly.instantiateStreaming) {
@@ -79,7 +81,7 @@ export class WasmService {
 
       // For bigint division, ensure you use BigInt literals or constructor for numbers
       const x: bigint = encoded >> BigInt(32); // Shift right to get the upper 32 bits
-      const y: bigint = encoded & (BigInt(2**32) - BigInt(1)); // Bitwise AND to get the lower 32 bits
+      const y: bigint = encoded & (BigInt(2 ** 32) - BigInt(1)); // Bitwise AND to get the lower 32 bits
 
       return new Point(Number(x), Number(y));
     } catch (error) {
@@ -93,7 +95,7 @@ export class WasmService {
 
       // For bigint division, ensure you use BigInt literals or constructor for numbers
       const x: bigint = encoded >> BigInt(32); // Shift right to get the upper 32 bits
-      const y: bigint = encoded & (BigInt(2**32) - BigInt(1)); // Bitwise AND to get the lower 32 bits
+      const y: bigint = encoded & (BigInt(2 ** 32) - BigInt(1)); // Bitwise AND to get the lower 32 bits
 
       return new Point(Number(x), Number(y));
     } catch (error) {
@@ -111,6 +113,10 @@ export class WasmService {
 
   public async clearGrid(): Promise<boolean> {
     return this.executeWasmFunction('clearGrid');
+  }
+
+  public async generateMaze(): Promise<boolean> {
+    return this.executeWasmFunction('generateMaze');
   }
 
   public async setActiveAlgorithm(name: number, width: number, height: number): Promise<boolean> {
@@ -137,12 +143,15 @@ export class WasmService {
     const numNodes = await this.getNumNodes().catch((error) => {
       console.error("Error getting numNodes", error);
     })
-    const { memory } = this.wasmModule.instance.exports;
+    const {memory} = this.wasmModule.instance.exports;
     if (!numNodes) {
       throw new Error('No numNodes found');
     }
-    const grid = new Int8Array(memory.buffer, 0, numNodes);
-    await this.executeWasmFunction('getGrid', grid, numNodes)
+    const gridPtr: number = await this.executeWasmFunction('getGrid')
+    if (!gridPtr) {
+      throw new Error('Failed to get grid');
+    }
+    const grid = new Int8Array(memory.buffer, gridPtr + 16, numNodes);
     return this.decodeGrid(grid);
   }
 
@@ -150,15 +159,15 @@ export class WasmService {
     const numNodes = await this.getNumNodes().catch((error) => {
       console.error("Error getting numNodes", error);
     })
-    const { memory } = this.wasmModule.instance.exports;
+    const {memory} = this.wasmModule.instance.exports;
     if (!numNodes) {
       throw new Error('No numNodes found');
     }
-    const grid = new Int8Array(memory.buffer, 0, numNodes);
-    const status: boolean = await this.executeWasmFunction('getSnapshot', grid, numNodes)
-    if (!status) {
-      throw new Error('Failed to get snapshots');
+    const gridPtr: number = await this.executeWasmFunction('getSnapshot')
+    if (!gridPtr) {
+      return []
     }
+    const grid = new Int8Array(memory.buffer, gridPtr + 16, numNodes);
     return this.decodeGrid(grid);
   }
 
@@ -166,15 +175,15 @@ export class WasmService {
     const len = await this.getNumPathNodes().catch((error) => {
       console.error("Error getting numNodes", error);
     })
-    const { memory } = this.wasmModule.instance.exports;
+    const {memory} = this.wasmModule.instance.exports;
     if (!len) {
-      throw new Error('No numNodes found');
+      throw new Error('No numPathNodes found');
     }
-    const path = new Int32Array(memory.buffer, 0, len * 4);
-    const status: boolean = await this.executeWasmFunction('getPath', path, len * 4)
-    if (!status) {
-      throw new Error('Failed to get snapshots');
+    const pathPtr: number = await this.executeWasmFunction('getPath')
+    if (!pathPtr) {
+      throw new Error('Failed to get path');
     }
+    const path = new Int32Array(memory.buffer, pathPtr + 16, len * 4);
     return this.decodePath(path);
   }
 
@@ -244,6 +253,7 @@ export class WasmService {
 export class Point {
   private readonly x: number;
   private readonly y: number;
+
   constructor(x: number, y: number) {
     this.x = x;
     this.y = y;

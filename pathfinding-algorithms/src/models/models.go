@@ -13,15 +13,24 @@ type Node struct {
 }
 
 type Grid struct {
-	width, height int // Dimensions of the grid
-	nodes         [][]*Node
-	start, end    *Node
+	width, height    int // Dimensions of the grid
+	nodes            [][]*Node
+	start, end       *Node
+	diagonalMovement bool
 }
 
-var Directions = []struct{ dx, dy int }{
+type Point struct{ Dx, Dy int }
+
+var diagonalDirections = []Point{
 	{-1, -1}, {0, -1}, {1, -1}, // Above
 	{-1, 0}, {1, 0}, // Sides
 	{-1, 1}, {0, 1}, {1, 1}, // Below
+}
+
+var cartesianDirections = []Point{
+	{0, -1},
+	{-1, 0}, {1, 0},
+	{0, 1},
 }
 
 // NewGrid creates a new grid of the given width and height
@@ -31,9 +40,9 @@ func NewGrid(width, height int) (*Grid, error) {
 	}
 
 	nodes := make([][]*Node, height)
-	yMid := height/2 - 1
-	xMid1 := width*1/4 - 1
-	xMid2 := width*3/4 - 1
+	yMid := height / 2
+	xMid1 := width * 1 / 4
+	xMid2 := width * 3 / 4
 	for i := range nodes {
 		nodes[i] = make([]*Node, width)
 		for j := range nodes[i] {
@@ -42,18 +51,19 @@ func NewGrid(width, height int) (*Grid, error) {
 				Y:       i,
 				IsWall:  i == 0 || j == 0 || i == height-1 || j == width-1,
 				Visited: false,
-				IsStart: i == yMid && j == xMid1, // TODO: Are these the right order
-				IsEnd:   i == yMid && j == xMid2,
+				IsStart: i == yMid && j == xMid1,
+				IsEnd:   i == yMid && j == xMid2+1,
 			}
 		}
 	}
 
 	return &Grid{
-		width:  width,
-		height: height,
-		nodes:  nodes,
-		start:  nodes[yMid][xMid1], // TODO: Are these the right order
-		end:    nodes[yMid][xMid2],
+		width:            width,
+		height:           height,
+		nodes:            nodes,
+		start:            nodes[yMid][xMid1],
+		end:              nodes[yMid][xMid2+1],
+		diagonalMovement: false,
 	}, nil
 }
 
@@ -145,10 +155,13 @@ func (g *Grid) SetWall(x, y int, isWall bool) error {
 
 func (g *Grid) GetNeighbors(node *Node) ([]*Node, error) {
 	var neighbors []*Node
-
-	for _, d := range Directions {
-		nx, ny := node.X+d.dx, node.Y+d.dy
-		if nx >= 0 && nx < g.width && ny >= 0 && ny < g.height && !g.nodes[ny][nx].IsWall {
+	directions, err := g.GetDirections()
+	if err != nil {
+		return nil, err
+	}
+	for _, d := range directions {
+		nx, ny := node.X+d.Dx, node.Y+d.Dy
+		if nx >= 0 && nx < g.width && ny >= 0 && ny < g.height {
 			neighbors = append(neighbors, g.nodes[ny][nx])
 		}
 	}
@@ -161,6 +174,17 @@ func (g *Grid) GetNodes() ([][]*Node, error) {
 		return nil, errors.New("grid is nil")
 	}
 	return g.nodes, nil
+}
+
+func (g *Grid) GetDirections() ([]Point, error) {
+	if g == nil {
+		return nil, errors.New("grid is nil")
+	}
+	if g.diagonalMovement {
+		return diagonalDirections, nil
+	} else {
+		return cartesianDirections, nil
+	}
 }
 
 func (g *Grid) DeepCopy() (*Grid, error) {

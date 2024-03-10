@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import {GridComponent} from "./grid/grid.component";
 
 @Component({
   selector: 'app-root',
@@ -13,8 +12,9 @@ export class AppComponent {
   animationSpeed: number = DefaultAnimationSpeed;
   clearGrid: boolean = true;
   startPathfinding: boolean = false;
+  drawGrid: boolean = false;
 
-  constructor(private gridComponent: GridComponent) {  }
+  constructor() {  }
 
   handleEraserToggled(isEraserActive: boolean): void {
     this.isEraserActive = isEraserActive;
@@ -34,10 +34,14 @@ export class AppComponent {
   handleClearGrid() {
     this.clearGrid = !this.clearGrid;
   }
+
+  handleDrawGrid() {
+    this.drawGrid = !this.drawGrid;
+  }
 }
 
-export const DefaultGridSize: number = 30;
-export const DefaultAnimationSpeed: number = 3;
+export const DefaultGridSize: number = 31;
+export const DefaultAnimationSpeed: number = 20;
 export const AStar: number = 0;
 export const Dijkstra: number = 1;
 export const DefaultAlgorithm: number = AStar;
