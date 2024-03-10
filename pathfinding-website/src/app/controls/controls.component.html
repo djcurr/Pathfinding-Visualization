@@ -18,7 +18,8 @@
   <div class="controls-row sliders">
     <div class="mb-3 slider-item">
       <label for="gridSizeSlider" class="form-label">Grid Size</label>
-      <input type="range" class="form-range" id="gridSizeSlider" min="21" max="51" step="2" #gridSizeSlider [defaultValue]="DefaultGridSize" (input)="changeGridSize($event)">
+      <input type="range" class="form-range d-none d-md-block" id="gridSizeSlider" min="21" max="51" step="2" #gridSizeSlider [defaultValue]="DefaultGridSize" (input)="changeGridSize($event)">
+      <input type="range" class="form-range d-md-none" id="gridSizeSliderSmall" min="11" max="17" step="2" #gridSizeSlider [defaultValue]="11" (input)="changeGridSize($event)">
     </div>
 
     <div class="mb-3 slider-item">

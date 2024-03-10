@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-root',
@@ -14,7 +15,22 @@ export class AppComponent {
   startPathfinding: boolean = false;
   drawGrid: boolean = false;
 
-  constructor() {  }
+  constructor(private breakpointObserver: BreakpointObserver) {
+    this.breakpointObserver.observe([
+      Breakpoints.XSmall,
+      Breakpoints.Small,
+      Breakpoints.Medium,
+      Breakpoints.Large,
+      Breakpoints.XLarge,
+    ]).subscribe(result => {
+      if (result.matches) {
+        if (result.breakpoints[Breakpoints.XSmall] || result.breakpoints[Breakpoints.Small]) {
+          this.gridSize = 13;
+          DefaultGridSize = 13;
+        }
+      }
+    });
+  }
 
   handleEraserToggled(isEraserActive: boolean): void {
     this.isEraserActive = isEraserActive;
@@ -40,7 +56,7 @@ export class AppComponent {
   }
 }
 
-export const DefaultGridSize: number = 31;
+export var DefaultGridSize: number = 31;
 export const DefaultAnimationSpeed: number = 20;
 export const AStar: number = 0;
 export const Dijkstra: number = 1;

@@ -1,12 +1,3 @@
-:root {
-  --wall-color: #333;
-  --start-color: #4CAF50; /* Adjusted green for better visibility */
-  --end-color: #F44336; /* Adjusted red for better visibility */
-  --path-color: #FFEB3B;
-  --visited-color: #FF9800;
-  --border-color: #e0e0e0; /* Lighter border for a modern look */
-}
-
 .container-fluid {
   padding: 20px;
 }
@@ -20,11 +11,12 @@
 
 .row {
   display: flex;
+  flex-wrap: nowrap; /* Prevent wrapping */
   gap: 1px; /* Space between cells */
 }
 
 .cell {
-  width: 20px;
+  flex-shrink: 1;
   height: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   cursor: pointer;
