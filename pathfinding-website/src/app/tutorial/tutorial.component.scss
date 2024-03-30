@@ -1,0 +1,47 @@
+.modal-header {
+  display: flex;
+  justify-content: flex-end;
+  border-bottom: none;
+}
+
+.modal-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 0 auto;
+}
+
+.modal-body {
+  flex-shrink: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.modal-description {
+  font-weight: 350;
+  @media (min-width: 768px) {
+    font-size: 1.75rem;
+  }
+
+}
+
+.tutorial-gif {
+  max-height: 40vh;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-footer button {
+  margin: 0 10px;
+}
+
+.close {
+  margin: 5px 5px 5px auto;
+}
+
+.text-center {
+  text-align: center;
+}

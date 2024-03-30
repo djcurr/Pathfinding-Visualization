@@ -1,7 +1,9 @@
 // src/app/grid/controls.component.ts
 import {Component, ElementRef, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import {WasmService} from "../wasm.service";
 import {Algorithms, AStar, DefaultAlgorithm, DefaultAnimationSpeed, DefaultGridSize, Dijkstra} from "../app.component";
+import {TutorialComponent} from "../tutorial/tutorial.component";
 
 @Component({
   selector: 'app-controls',
@@ -21,7 +23,7 @@ export class ControlsComponent implements OnInit {
   isEraserActive: boolean = false;
   activeAlgorithm: string = "";
 
-  constructor(private wasmService: WasmService) { }
+  constructor(private wasmService: WasmService, private modalService: NgbModal) { }
 
   ngOnInit(): void {
     this.gridSize.emit(DefaultGridSize);
@@ -82,6 +84,15 @@ export class ControlsComponent implements OnInit {
     this.wasmService.generateMaze().then(() => {
       this.drawGrid.emit()
     })
+  }
+
+  openTutorial() {
+    const modalRef = this.modalService.open(TutorialComponent, {size: "lg"});
+    modalRef.result.then((result) => {
+      console.log(result); // Handle the result if needed
+    }, (reason) => {
+      console.log(reason); // Handle the dismiss reason if needed
+    });
   }
 
   protected readonly DefaultGridSize = DefaultGridSize;

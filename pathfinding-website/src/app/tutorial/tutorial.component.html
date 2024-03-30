@@ -1,0 +1,20 @@
+
+<div class="modal-content">
+  <div class="modal-header">
+    <button type="button" class="btn btn-danger close" aria-label="Close" (click)="closeModal()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body text-center">
+    <h5 class="modal-title">{{ currentStep.title }}</h5>
+    <img [src]="currentStep.gifUrl" class="tutorial-gif my-3" alt="{{ currentStep.title }}">
+    <p class="modal-description">{{ currentStep.description }}</p>
+  </div>
+  <div class="modal-footer justify-content-between">
+    <button type="button" class="btn btn-secondary" *ngIf="currentStepIndex > 0" (click)="previousStep()">Previous</button>
+    <div *ngIf="currentStepIndex === 0" class="flex-grow-1"></div>
+    <button type="button" class="btn btn-primary" (click)="nextStep()">
+      {{ currentStepIndex < steps.length - 1 ? 'Next' : 'Close' }}
+    </button>
+  </div>
+</div>

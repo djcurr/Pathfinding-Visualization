@@ -11,7 +11,6 @@
         <li><a ngbDropdownItem class="dropdown-item" href="#" (click)="setAlgorithm(Dijkstra)">{{Algorithms.get(Dijkstra)}}</a></li>
       </ul>
     </div>
-
     <button class="btn control-item eraser" [class.active]="isEraserActive" (click)="toggleEraser()">Toggle Eraser</button>
   </div>
 
@@ -33,6 +32,7 @@
     <button type="button" class="btn btn-warning" (click)="generateMaze()">Create Maze</button>
     <button type="button" class="btn btn-warning" (click)="clearGrid()">Clear Grid</button>
     <button type="button" class="btn btn-danger" (click)="resetApplication()">Reset</button>
+    <button type="button" class="btn btn-info" (click)="openTutorial()">Tutorial</button>
   </div>
 
 </div>
