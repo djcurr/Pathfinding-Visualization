@@ -26,12 +26,8 @@ export class ControlsComponent implements OnInit {
   constructor(private wasmService: WasmService, private modalService: NgbModal) { }
 
   ngOnInit(): void {
-    this.gridSize.emit(DefaultGridSize);
-    this.animationSpeed.emit(DefaultAnimationSpeed);
-    this.eraserToggled.emit(false)
-    this.isEraserActive = false;
-    this.currentSize = DefaultGridSize;
-    this.setAlgorithm(DefaultAlgorithm);
+    this.initialization()
+    this.openTutorial()
   }
 
   resetApplication() {
@@ -39,7 +35,16 @@ export class ControlsComponent implements OnInit {
       this.gridSizeSlider.nativeElement.value = DefaultGridSize;
       this.animationSpeedSlider.nativeElement.value = DefaultAnimationSpeed;
     }
-    this.ngOnInit()
+    this.initialization()
+  }
+
+  initialization(): void {
+    this.gridSize.emit(DefaultGridSize);
+    this.animationSpeed.emit(DefaultAnimationSpeed);
+    this.eraserToggled.emit(false)
+    this.isEraserActive = false;
+    this.currentSize = DefaultGridSize;
+    this.setAlgorithm(DefaultAlgorithm);
   }
 
   clearGrid(): void {
