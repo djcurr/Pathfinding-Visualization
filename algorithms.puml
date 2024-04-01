@@ -1,0 +1,215 @@
+@startuml
+namespace main {
+    class Main {
+        - pf *pathfinder.Pathfinder
+        - snapshotPointer *[]uint8
+
+        + main()
+        + setActiveAlgorithm(algorithm pathfinder.Algorithm, width int, height int) bool
+        + setStart(x int, y int) bool
+        + setEnd(x int, y int) bool
+        + getStart() uint64
+        + getEnd() uint64
+        + setWall(x int, y int, isWall bool) bool
+        + clearGrid() bool
+        + changeGridSize(width int, height int) bool
+        + getGrid() *[]uint8
+        + findPath() bool
+        + getNumNodes() int
+        + getNumPathNodes() int
+        + getWidth() int
+        + getSnapshot() *[]uint8
+        + getPath() *[]uint32
+        + generateMaze() bool
+        + log(msg string)
+    }
+}
+
+namespace algorithms {
+    class AStar << (S,Aquamarine) >> {
+        - grid *models.Grid
+        - solved bool
+        - openSet *datastructures.PriorityQueue
+        - snapshots *datastructures.Queue
+        - path <font color=blue>map</font>[models.Node]models.Node
+        - closedSet <font color=blue>map</font>[*models.Node]bool
+        - fScore <font color=blue>map</font>[*models.Node]float64
+        - gScore <font color=blue>map</font>[*models.Node]float64
+        - mu sync.Mutex
+
+        - resetDataStructures()
+
+        + Init(width int, height int) error
+        + Clear() error
+        + FindPath() error
+        + GetGrid() (*models.Grid, error)
+        + GetSnapshot() ([][]*models.Node, error)
+        + GetPath() (<font color=blue>map</font>[models.Node]models.Node, error)
+        + SetStart(x int, y int) error
+        + SetEnd(x int, y int) error
+        + GetStart() (*models.Node, error)
+        + GetEnd() (*models.Node, error)
+        + SetWall(x int, y int, isWall bool) error
+
+    }
+    class Dijkstra << (S,Aquamarine) >> {
+        - grid *models.Grid
+        - solved bool
+        - openSet *datastructures.PriorityQueue
+        - snapshots *datastructures.Queue
+        - path <font color=blue>map</font>[models.Node]models.Node
+        - distances <font color=blue>map</font>[*models.Node]float64
+        - mu sync.Mutex
+
+        - resetDataStructures()
+
+        + Init(width int, height int) error
+        + Clear() error
+        + FindPath() error
+        + GetGrid() (*models.Grid, error)
+        + GetSnapshot() ([][]*models.Node, error)
+        + GetPath() (<font color=blue>map</font>[models.Node]models.Node, error)
+        + SetStart(x int, y int) error
+        + SetEnd(x int, y int) error
+        + GetStart() (*models.Node, error)
+        + GetEnd() (*models.Node, error)
+        + SetWall(x int, y int, isWall bool) error
+
+    }
+    interface PathfindingAlgorithm  {
+        + Init(width int, height int) error
+        + Clear() error
+        + FindPath() error
+        + GetGrid() (*models.Grid, error)
+        + GetSnapshot() ([][]*models.Node, error)
+        + GetPath() (<font color=blue>map</font>[models.Node]models.Node, error)
+        + SetStart(x int, y int) error
+        + SetEnd(x int, y int) error
+        + SetWall(x int, y int, visited bool) error
+        + GetStart() (*models.Node, error)
+        + GetEnd() (*models.Node, error)
+
+    }
+}
+
+namespace datastructures {
+    class Item << (S,Aquamarine) >> {
+        - node *models.Node
+        - priority float64
+        - index int
+
+        + GetNode() *models.Node
+        + GetPriority() float64
+
+    }
+    class PriorityQueue << (S,Aquamarine) >> {
+        + Len() int
+        + Less(i int, j int) bool
+        + Swap(i int, j int)
+        + Push(x <font color=blue>interface</font>{})
+        + Pop() <font color=blue>interface</font>{}
+        + Update(node *models.Node, newPriority float64)
+        + Contains(node *models.Node) bool
+        + Init()
+
+    }
+    class Queue << (S,Aquamarine) >> {
+        + Enqueue(item <font color=blue>interface</font>{})
+        + Dequeue() <font color=blue>interface</font>{}
+        + IsEmpty() bool
+        + Size() int
+
+    }
+    class datastructures.PriorityQueue << (T, #FF7700) >>  {
+    }
+    class datastructures.Queue << (T, #FF7700) >>  {
+    }
+}
+
+
+namespace models {
+    class Grid << (S,Aquamarine) >> {
+        - width int
+        - nodes [][]*Node
+        - start *Node
+        - diagonalMovement bool
+
+        + SetStart(x int, y int) error
+        + SetEnd(x int, y int) error
+        + GetWidth() int
+        + GetHeight() int
+        + GetNode(x int, y int) (*Node, error)
+        + GetStart() (*Node, error)
+        + GetEnd() (*Node, error)
+        + SetWall(x int, y int, isWall bool) error
+        + GetNeighbors(node *Node) ([]*Node, error)
+        + GetNodes() ([][]*Node, error)
+        + GetDirections() ([]Point, error)
+        + DeepCopy() (*Grid, error)
+
+    }
+    class Node << (S,Aquamarine) >> {
+        + X int
+        + Y int
+        + Visited bool
+        + IsWall bool
+        + IsStart bool
+        + IsEnd bool
+
+    }
+'    class Point << (S,Aquamarine) >> {
+'        + Dx int
+'        + Dy int
+'    }
+}
+
+
+namespace pathfinder {
+    class Pathfinder << (S,Aquamarine) >> {
+        - algorithmsMap <font color=blue>map</font>[Algorithm]<font color=blue>func</font>() algorithms.PathfindingAlgorithm
+        - activeAlgorithm algorithms.PathfindingAlgorithm
+
+        - generateMaze(maze [][]*models.Node, x int, y int) error
+
+        + SetActiveAlgorithm(algorithm Algorithm, width int, height int) error
+        + SetStart(x int, y int) error
+        + SetEnd(x int, y int) error
+        + SetWall(x int, y int, isWall bool) error
+        + FindPath() error
+        + ClearGrid() error
+        + ChangeGridSize(width int, height int) error
+        + GetNodes() ([][]*models.Node, error)
+        + GetDimensions() (int, int, error)
+        + GetSnapshot() ([][]*models.Node, error)
+        + GetPath() (<font color=blue>map</font>[models.Node]models.Node, error)
+        + GetStart() (*models.Node, error)
+        + GetEnd() (*models.Node, error)
+        + GenerateMaze() error
+
+    }
+}
+
+"datastructures.Item" ..> "models.Node" : holds
+"datastructures.PriorityQueue" ..> "datastructures.Item" : uses
+"datastructures.Queue" ..> "models.Node" : operates on
+
+"algorithms.AStar" ..> "models.Grid" : operates on
+"algorithms.AStar" ..> "datastructures.PriorityQueue" : uses
+"algorithms.AStar" ..> "datastructures.Queue" : uses
+
+"algorithms.Dijkstra" ..> "models.Grid" : operates on
+"algorithms.Dijkstra" ..> "datastructures.PriorityQueue" : uses
+"algorithms.Dijkstra" ..> "datastructures.Queue" : uses
+
+"pathfinder.Pathfinder" ..> "algorithms.PathfindingAlgorithm" : delegates
+'"pathfinder.Pathfinder" ..> "models.Node" : manipulates
+
+"algorithms.PathfindingAlgorithm" <|-- "algorithms.AStar" : implements
+"algorithms.PathfindingAlgorithm" <|-- "algorithms.Dijkstra" : implements
+
+"models.Node" ..> "models.Grid"
+
+Main --> "pathfinder" : instantiates
+Main ..> "pathfinder" : calls
+
+@enduml

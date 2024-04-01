@@ -1,0 +1,171 @@
+@startuml
+
+package "UI Components" {
+    class AppComponent {
+        -breakpointObserver: BreakpointObserver
+        +title: string
+        +isEraserActive: boolean
+        +gridSize: number
+        +animationSpeed: number
+        +clearGrid: boolean
+        +startPathfinding: boolean
+        +drawGrid: boolean
+
+        +constructor(breakpointObserver: BreakpointObserver)
+        +handleEraserToggled(isEraserActive: boolean): void
+        +handleAnimationSpeedChanged(newSpeed: number): void
+        +handleStartPathfindingEvent(): void
+        +handleChangeGridSize(size: number): void
+        +handleClearGrid(): void
+        +handleDrawGrid(): void
+    }
+
+    class ControlsComponent {
+        -wasmService: WasmService
+        -modalService: NgbModal
+        -gridSizeSlider: ElementRef
+        -animationSpeedSlider: ElementRef
+        -currentSize: number
+        -isEraserActive: boolean
+        -activeAlgorithm: string
+        +eraserToggled: EventEmitter<boolean>
+        +startPathfindingEvent: EventEmitter<void>
+        +animationSpeed: EventEmitter<number>
+        +gridSize: EventEmitter<number>
+        +clearGridEvent: EventEmitter<void>
+        +drawGrid: EventEmitter<void>
+
+        +constructor(wasmService: WasmService, modalService: NgbModal)
+        +ngOnInit(): void
+        +resetApplication(): void
+        +initialization(): void
+        +clearGrid(): void
+        +startPathfinding(): void
+        +changeAnimationSpeed(event: Event): void
+        +changeGridSize(event: Event): void
+        +setAlgorithm(algorithm: number): Promise<void>
+        +toggleEraser(): void
+        +generateMaze(): void
+        +openTutorial(): void
+    }
+
+    class GridComponent {
+        -grid: Cell[][]
+        -isMouseDown: boolean
+        -startSelected: boolean
+        -endSelected: boolean
+        -prevCell: Cell
+        -solved: boolean
+        -wasmService: WasmService
+        +isEraserActive: boolean
+        +animationSpeed: number
+        +gridSize: number
+        +clearGridEvent: any
+        +startPathfinding: boolean
+        +drawGridEvent: boolean
+
+        +constructor(wasmService: WasmService)
+        +ngOnInit(): void
+        +ngOnChanges(changes: SimpleChanges): void
+        +ngOnDestroy(): void
+        +onGlobalMouseUp(): void
+        +onMouseDown(cell: Cell): void
+        +onMouseEnter(cell: Cell): void
+        +onMouseUp(): void
+        +solveGrid(): void
+        +drawGrid(): void
+        +changeGridSize(size: number): void
+        +clearGrid(): void
+        +showSnapshots(): void
+        +showPath(): Promise<void>
+        +reconstructPath(path: Map<String, Point>, goal: Point, current: Point | undefined): void
+    }
+
+    class TutorialComponent {
+        -modalService: NgbModal
+        -steps: Array
+        -currentStepIndex: number
+
+        +constructor(modalService: NgbModal)
+        +currentStep(): Object
+        +nextStep(): void
+        +previousStep(): void
+        +closeModal(): void
+    }
+}
+
+package "Models" {
+    class "Cell" {
+        +x: number
+        +y: number
+        +isWall: boolean
+        +isStart: boolean
+        +isEnd: boolean
+        +isPath: boolean
+        +visited: boolean
+    }
+}
+
+package "Services" {
+    class WasmService {
+        -wasmModule: any
+        -go: any
+        -wasmReady: Promise<void>
+        -resolveWasmReady: () => void
+        +WASM_URL: string
+
+        +constructor()
+        +wasmBrowserInstantiate(wasmModuleUrl: string, importObject: any): Promise<any>
+        +runWasmAdd(): Promise<void>
+        +initWasm(): Promise<void>
+        +setStart(x: number, y: number): Promise<boolean>
+        +setEnd(x: number, y: number): Promise<boolean>
+        +getStart(): Promise<Point>
+        +getEnd(): Promise<Point>
+        +setWall(x: number, y: number, isWall: boolean): Promise<boolean>
+        +findPath(): Promise<any>
+        +clearGrid(): Promise<boolean>
+        +generateMaze(): Promise<boolean>
+        +setActiveAlgorithm(name: number, width: number, height: number): Promise<boolean>
+        +changeGridSize(width: number, height: number): Promise<boolean>
+        +getNumNodes(): Promise<number>
+        +getNumPathNodes(): Promise<number>
+        +getWidth(): Promise<number>
+        +getGrid(): Promise<Cell[][]>
+        +getSnapshot(): Promise<Cell[][]>
+        +getPath(): Promise<Map<String, Point>>
+        -executeWasmFunction(functionName: string, ...args: any[]): Promise<any>
+        +decodeGrid(encodedGrid: Int8Array): Promise<Cell[][]>
+        +decodePath(encodedPath: Int32Array): Promise<Map<String, Point>>
+    }
+
+    class Point {
+        -x: number
+        -y: number
+
+        +constructor(x: number, y: number)
+        +getX(): number
+        +getY(): number
+        +toString(): String
+    }
+}
+
+'AppComponent --> "wasmService : uses" : WasmService
+'ControlsComponent --> "wasmService : uses" : WasmService
+'ControlsComponent --> "modalService : uses" : NgbModal
+'GridComponent --> "wasmService : uses" : WasmService
+'TutorialComponent --> "modalService : uses" : NgbModal
+'WasmService --> Point: uses
+'ControlsComponent ..> AppComponent : emits events >
+'GridComponent ..> AppComponent : emits events >
+
+ControlsComponent ..> WasmService : uses
+ControlsComponent ..> AppComponent : notifies
+AppComponent ..> GridComponent : notifies
+GridComponent ..> WasmService : uses
+ControlsComponent ..> TutorialComponent : uses
+
+WasmService --> Cell : manipulates
+WasmService --> Point : manipulates
+GridComponent --> Cell : displays
+@enduml
